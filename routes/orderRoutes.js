@@ -3,9 +3,20 @@ const db = require('../db');
 
 const router = express.Router();
 
-router.post('/', async (req, res, next) => {
+//Customer Routes
+router.post('/booking', async (req, res, next) => {
     try {
         let results = await db.bookPickUp(req.body);
+        res.json(results);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+});
+
+router.post('/getOrderHistory', async (req, res, next) => {
+    try {
+        let results = await db.getOrderHistory(req.body.customerid);
         res.json(results);
     } catch (err) {
         console.log(err);

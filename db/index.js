@@ -11,9 +11,11 @@ const conn = mysql.createPool({
 
 let labadadb = {};
 
-labadadb.all = () => {
+labadadb.bookPickUp = (bookInfo) => {
     return new Promise((resolve, reject) => {
-        conn.query(`SELECT * FROM tbl_Orders`, (err, results) => {
+        conn.query(`INSERT INTO tbl_Orders (Customer_ID,Order_Date,Pickup_Date,Deliver_Date,Amount,Weight,Status,Time) VALUES (?,?,?,?,?,?,?,?)`,
+        [bookInfo.Customer_ID, new Date(), bookInfo.Pickup_Date, bookInfo.Deliver_Date, bookInfo.Amount, bookInfo.Weight, bookInfo.Status, bookInfo.Time],
+        (err, results) => {
             if(err){
                 return reject(err);
             }
@@ -22,9 +24,11 @@ labadadb.all = () => {
     });
 };
 
-labadadb.bookPickUp = (bookInfo) => {
+labadadb.getOrderHistory = (customerID) => {
     return new Promise((resolve, reject) => {
-        conn.query(`INSERT INTO tbl_Orders (Customer_ID,Order_Date,Pickup_Date,Deliver_Date,Amount,Weight,Status) VALUES (?,?,?,?,?,?,?)`,[bookInfo.Customer_ID, bookInfo.Order_Date, bookInfo.Pickup_Date, bookInfo.Deliver_Date, bookInfo.Amount, bookInfo.Weight, bookInfo.Status], (err, results) => {
+        conn.query(`SELECT * FROM tbl_Orders WHERE Customer_ID = ? ORDER BY Order_Date LIMIT 10;`,
+        [customerID],
+        (err, results) => {
             if(err){
                 return reject(err);
             }

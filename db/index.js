@@ -26,8 +26,25 @@ labadadb.bookPickUp = (bookInfo) => {
 
 labadadb.getOrderHistory = (customerID) => {
     return new Promise((resolve, reject) => {
-        conn.query(`SELECT * FROM tbl_Orders WHERE Customer_ID = ? ORDER BY Order_Date LIMIT 10;`,
+        conn.query(`SELECT ord.Order_ID as id, ord.Amount as amount, ord.Pickup_Date as pickup, ord.Deliver_Date as deliver,
+        ord.Weight as kilo, ord.Status as status, stat.Status_Desc as statusDesc, ord.Time as time FROM tbl_Orders as ord LEFT JOIN tbl_Status as stat
+        ON stat.Status_ID = ord.Status WHERE ord.Customer_ID = ? 
+        ORDER BY ord.Order_Date LIMIT 10;`,
         [customerID],
+        (err, results) => {
+            if(err){
+                return reject(err);
+            }
+            console.log(results);
+            return resolve(results);
+        });
+    });
+};
+
+labadadb.getOrderDetails = (orderID) => {
+    return new Promise((resolve, reject) => {
+        conn.query(`SELECT Description as itemdesc,Quantity as qty FROM tbl_OrderItems WHERE Order_ID = ?`,
+        [orderID],
         (err, results) => {
             if(err){
                 return reject(err);

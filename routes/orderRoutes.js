@@ -24,4 +24,14 @@ router.post('/getOrderHistory', async (req, res, next) => {
     }
 });
 
+router.post('/getOrderDetails', async (req, res, next) => {
+    try {
+        let results = await db.getOrderDetails(req.body.orderid);
+        res.json(results);
+    } catch (err) {
+        console.log(err);
+        res.sendStatus(500);
+    }
+}); 
+
 module.exports = router;

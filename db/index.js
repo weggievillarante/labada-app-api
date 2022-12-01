@@ -35,7 +35,6 @@ labadadb.getOrderHistory = (customerID) => {
             if(err){
                 return reject(err);
             }
-            console.log(results);
             return resolve(results);
         });
     });

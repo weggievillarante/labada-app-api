@@ -98,4 +98,19 @@ labadadb.CheckMobile = (mobile) => {
     );
 }
 
+labadadb.adminLogin = (user) => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT * FROM tbl_Users WHERE username = ? AND password = ?`,
+            [user.username, user.password],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
 module.exports = labadadb;

@@ -70,4 +70,18 @@ router.post('/checkmobile', async (req, res, next) => {
     }
 });
 
+router.post('/adminlogin', async (req, res, next) => {
+    try {
+        let results = await db.adminLogin(req.body);
+        let resObject = results[0];
+        if(resObject){
+            res.json(resObject);
+        } else {
+            res.json({});
+        }
+    } catch (err) {
+        res.sendStatus(500);
+    } 
+});
+
 module.exports = router;

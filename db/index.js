@@ -53,4 +53,49 @@ labadadb.getOrderDetails = (orderID) => {
     });
 };
 
+labadadb.Register = (basicInfo) => {
+    return new Promise((resolve, reject) => {
+        conn.query(`INSERT INTO tbl_Customers (lastname,firstname,email,mobilephone,address,password) VALUES (?,?,?,?,?,?)`,
+        [basicInfo.lastname, basicInfo.firstname, basicInfo.email, basicInfo.phonenumber, basicInfo.address, basicInfo.password],
+        (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+};
+
+labadadb.Login = (credentials) => {
+    return new Promise(
+        (resolve , reject) => {
+            conn.query(`SELECT * FROM tbl_Customers WHERE mobilephone = ? and password = ?`,
+            [credentials.mobilephone,credentials.password],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            }
+            );
+        }
+    );
+};
+
+labadadb.CheckMobile = (mobile) => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT * FROM tbl_Customers WHERE mobilephone = ?`,
+            [mobile.mobilephone],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            }
+            );
+        }
+    );
+}
+
 module.exports = labadadb;

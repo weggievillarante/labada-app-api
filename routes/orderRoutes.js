@@ -84,4 +84,22 @@ router.post('/adminlogin', async (req, res, next) => {
     } 
 });
 
+router.post('/getOrders', async (req, res, next) => {
+    try {
+        let results = await db.getOrders();
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/getItems', async (req, res, next) => {
+    try {
+        let results = await db.getItemList();
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
 module.exports = router;

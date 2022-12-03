@@ -113,4 +113,35 @@ labadadb.adminLogin = (user) => {
     );
 }
 
+labadadb.getOrders = () => {
+    const date = new Date().toISOString().split('T')[0];
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT ord.*, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID WHERE Pickup_Date = ? AND Status in (1,3)`,
+            [date],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
+labadadb.getItemList = () => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT *, 0 as qty FROM tbl_Items`,
+            [],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
 module.exports = labadadb;

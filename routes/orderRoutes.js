@@ -102,4 +102,32 @@ router.post('/getItems', async (req, res, next) => {
     }
 });
 
+router.post('/getServices', async (req, res, next) => {
+    try {
+        let results = await db.getServices();
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/updateOrder', async (req, res, next) => {
+    try {
+        let results = await db.updateOrderAsProcessing(req.body);
+        let results2 = await db.insertOrderItems(req.body);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/insertOrderItems', async (req, res, next) => {
+    try {
+        let results = await db.insertOrderItems(req.body);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
 module.exports = router;

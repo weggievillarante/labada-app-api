@@ -29,7 +29,7 @@ labadadb.getOrderHistory = (customerID) => {
         conn.query(`SELECT ord.Order_ID as id, ord.Amount as amount, ord.Pickup_Date as pickup, ord.Deliver_Date as deliver,
         ord.Weight as kilo, ord.Status as status, stat.Status_Desc as statusDesc, ord.Time as time FROM tbl_Orders as ord LEFT JOIN tbl_Status as stat
         ON stat.Status_ID = ord.Status WHERE ord.Customer_ID = ? 
-        ORDER BY ord.Order_Date LIMIT 10;`,
+        ORDER BY ord.Order_Date DESC LIMIT 10;`,
         [customerID],
         (err, results) => {
             if(err){
@@ -142,6 +142,59 @@ labadadb.getItemList = () => {
             });
         }
     );
+}
+
+labadadb.getServices = () => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(
+                `SELECT * FROM tbl_Services`,
+                [],
+                (err, results) => {
+                    if(err){
+                        return reject(err);
+                    }
+                    return resolve(results);
+                }
+            );
+        }
+    );
+}
+
+labadadb.updateOrderAsProcessing = (orderInfo) => {
+    return new Promise((resolve, reject) => {
+        conn.query(`UPDATE tbl_Orders SET Amount = ?, Weight = ?, Status = 2 WHERE Order_ID = ?`,
+        [orderInfo.amount, orderInfo.weight, orderInfo.order.Order_ID],
+        (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
+labadadb.insertOrderItems = (orderItemsInfo) => {
+    let strVALUES = ""; 
+
+    for (let i = 0; i < orderItemsInfo.orderitems.length; i++) {
+        if(i === 0){
+            strVALUES += "(" + orderItemsInfo.order.Order_ID + "," + orderItemsInfo.order.Customer_ID + ",'" + orderItemsInfo.orderitems[i].itemdesc + "'," + orderItemsInfo.orderitems[i].qty + ")";
+        } else {
+            strVALUES += ",(" + orderItemsInfo.order.Order_ID + "," + orderItemsInfo.order.Customer_ID + ",'" + orderItemsInfo.orderitems[i].itemdesc + "'," + orderItemsInfo.orderitems[i].qty + ")";
+        }
+    }
+
+    return new Promise((resolve, reject) => {
+        conn.query(`INSERT INTO tbl_OrderItems (Order_ID, Customer_ID, Description, Quantity) VALUES ${strVALUES}`,
+        [strVALUES],
+        (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
 }
 
 module.exports = labadadb;

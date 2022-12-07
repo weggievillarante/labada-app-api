@@ -197,4 +197,20 @@ labadadb.insertOrderItems = (orderItemsInfo) => {
     });
 }
 
+labadadb.getAdminOrders = () => {
+    //const date = new Date().toISOString().split('T')[0];
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT ord.*, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID WHERE Status in (2)`,
+            [],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
 module.exports = labadadb;

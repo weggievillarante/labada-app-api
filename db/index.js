@@ -117,7 +117,7 @@ labadadb.getOrders = () => {
     const date = new Date().toISOString().split('T')[0];
     return new Promise(
         (resolve, reject) => {
-            conn.query(`SELECT ord.*, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID WHERE Pickup_Date = ? AND Status in (1,3)`,
+            conn.query(`SELECT ord.*, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID WHERE Pickup_Date <= ? AND Status in (1,3)`,
             [date],
             (err, results) => {
                 if(err){
@@ -201,7 +201,7 @@ labadadb.getAdminOrders = () => {
     //const date = new Date().toISOString().split('T')[0];
     return new Promise(
         (resolve, reject) => {
-            conn.query(`SELECT ord.*, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID WHERE Status in (2)`,
+            conn.query(`SELECT ord.*, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname, stat.Status_Desc FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID LEFT JOIN tbl_Status as stat ON stat.Status_ID = ord.Status WHERE Status in (2)`,
             [],
             (err, results) => {
                 if(err){
@@ -211,6 +211,33 @@ labadadb.getAdminOrders = () => {
             });
         }
     );
+}
+
+labadadb.updateOrderAsDelivery = (orderID) => {
+    return new Promise((resolve, reject) => {
+        conn.query(`UPDATE tbl_Orders SET Status = 3 WHERE Order_ID = ?`,
+        [orderID],
+        (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
+labadadb.updateDelivered = (orderID) => {
+    const date = new Date().toISOString().split('T')[0];
+    return new Promise((resolve, reject) => {
+        conn.query(`UPDATE tbl_Orders SET Status = 4, Deliver_Date = ? WHERE Order_ID = ?`,
+        [date, orderID],
+        (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
 }
 
 module.exports = labadadb;

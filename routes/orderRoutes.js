@@ -139,4 +139,22 @@ router.post('/adminOrders', async (req, res, next) => {
     }
 });
 
+router.post('/updateOrderForDeliver', async (req, res, next) => {
+    try {
+        let results = await db.updateOrderAsDelivery(req.body.orderid);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/updateDelivered', async (req, res, next) => {
+    try {
+        let results = await db.updateDelivered(req.body.orderid);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
 module.exports = router;

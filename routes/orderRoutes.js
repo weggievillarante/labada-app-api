@@ -157,4 +157,13 @@ router.post('/updateDelivered', async (req, res, next) => {
     }
 });
 
+router.post('/adminOrdersHistory', async (req, res, next) => {
+    try {
+        let results = await db.getAdminOrdersHistory();
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
 module.exports = router;

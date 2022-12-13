@@ -162,9 +162,10 @@ labadadb.getServices = () => {
 }
 
 labadadb.updateOrderAsProcessing = (orderInfo) => {
+    console.log(orderInfo);
     return new Promise((resolve, reject) => {
-        conn.query(`UPDATE tbl_Orders SET Amount = ?, Weight = ?, Status = 2 WHERE Order_ID = ?`,
-        [orderInfo.amount, orderInfo.weight, orderInfo.order.Order_ID],
+        conn.query(`UPDATE tbl_Orders SET Amount = ?, Weight = ?, Status = 2, Service_ID = ?, Rider_ID = ? WHERE Order_ID = ?`,
+        [orderInfo.amount, orderInfo.weight, orderInfo.serviceid, orderInfo.riderid ,orderInfo.order.Order_ID],
         (err, results) => {
             if(err) {
                 return reject(err);
@@ -242,6 +243,22 @@ labadadb.updateDelivered = (orderID) => {
             return resolve(results);
         });
     });
+}
+
+labadadb.getAdminOrdersHistory = () => {
+    //const date = new Date().toISOString().split('T')[0];
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT ord.*, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname, stat.Status_Desc FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID LEFT JOIN tbl_Status as stat ON stat.Status_ID = ord.Status WHERE ord.Status in (3,4)`,
+            [],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
 }
 
 module.exports = labadadb;

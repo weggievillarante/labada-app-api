@@ -166,4 +166,22 @@ router.post('/adminOrdersHistory', async (req, res, next) => {
     }
 });
 
+router.post('/getItemQuantity', async (req, res, next) => {
+    try {
+        let results = await db.getItemQuantity();
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/getSales', async (req, res, next) => {
+    try {
+        let results = await db.getSales();
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
 module.exports = router;

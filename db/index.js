@@ -249,7 +249,39 @@ labadadb.getAdminOrdersHistory = () => {
     //const date = new Date().toISOString().split('T')[0];
     return new Promise(
         (resolve, reject) => {
-            conn.query(`SELECT ord.*, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname, stat.Status_Desc FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID LEFT JOIN tbl_Status as stat ON stat.Status_ID = ord.Status WHERE ord.Status in (3,4)`,
+            conn.query(`SELECT ord.*, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname, stat.Status_Desc FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID LEFT JOIN tbl_Status as stat ON stat.Status_ID = ord.Status WHERE ord.Status in (3,4) Order by ord.Status, ord.Deliver_Date desc`,
+            [],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
+labadadb.getItemQuantity = () => {
+    //const date = new Date().toISOString().split('T')[0];
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT Description, SUM(Quantity) as Qty FROM tbl_OrderItems Group by Description`,
+            [],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
+labadadb.getSales = () => {
+    //const date = new Date().toISOString().split('T')[0];
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT serv.servicename, SUM(ord.Amount) as Total FROM labada_db.tbl_Orders as ord left join labada_db.tbl_Services serv ON serv.serviceid = ord.Service_ID WHERE ord.Status = 4 group by serv.servicename`,
             [],
             (err, results) => {
                 if(err){

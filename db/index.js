@@ -27,7 +27,7 @@ labadadb.bookPickUp = (bookInfo) => {
 labadadb.getOrderHistory = (customerID) => {
     return new Promise((resolve, reject) => {
         conn.query(`SELECT ord.Order_ID as id, ord.Amount as amount, ord.Pickup_Date as pickup, ord.Deliver_Date as deliver,
-        ord.Weight as kilo, ord.Status as status, stat.Status_Desc as statusDesc, ord.Time as time FROM tbl_Orders as ord LEFT JOIN tbl_Status as stat
+        ord.Weight as kilo, ord.Status as status, stat.Status_Desc as statusDesc, ord.Time as time, ord.WithQRQty as withqr FROM tbl_Orders as ord LEFT JOIN tbl_Status as stat
         ON stat.Status_ID = ord.Status WHERE ord.Customer_ID = ? 
         ORDER BY ord.Order_Date DESC LIMIT 10;`,
         [customerID],
@@ -117,7 +117,7 @@ labadadb.getOrders = () => {
     const date = new Date().toISOString().split('T')[0];
     return new Promise(
         (resolve, reject) => {
-            conn.query(`SELECT ord.*, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID WHERE Pickup_Date <= ? AND Status in (1,3)`,
+            conn.query(`SELECT ord.*, stat.Status_Desc, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID left join tbl_Status as stat ON stat.Status_ID = ord.Status WHERE Pickup_Date <= ? AND Status in (1,3)`,
             [date],
             (err, results) => {
                 if(err){
@@ -162,10 +162,9 @@ labadadb.getServices = () => {
 }
 
 labadadb.updateOrderAsProcessing = (orderInfo) => {
-    console.log(orderInfo);
     return new Promise((resolve, reject) => {
-        conn.query(`UPDATE tbl_Orders SET Amount = ?, Weight = ?, Status = 2, Service_ID = ?, Rider_ID = ? WHERE Order_ID = ?`,
-        [orderInfo.amount, orderInfo.weight, orderInfo.serviceid, orderInfo.riderid ,orderInfo.order.Order_ID],
+        conn.query(`UPDATE tbl_Orders SET Amount = ?, Weight = ?, Status = 2, Service_ID = ?, Rider_ID = ?, WithQRQty = ? WHERE Order_ID = ?`,
+        [orderInfo.amount, orderInfo.weight, orderInfo.serviceid, orderInfo.riderid, orderInfo.withqr ,orderInfo.order.Order_ID],
         (err, results) => {
             if(err) {
                 return reject(err);
@@ -179,12 +178,10 @@ labadadb.insertOrderItems = (orderItemsInfo) => {
     let strVALUES = ""; 
 
     for (let i = 0; i < orderItemsInfo.orderitems.length; i++) {
-        if(i === 0){
-            if(orderItemsInfo.orderitems[i].qty !== 0){
+        if(orderItemsInfo.orderitems[i].qty !== 0){
+            if(strVALUES === ""){
                 strVALUES += "(" + orderItemsInfo.order.Order_ID + "," + orderItemsInfo.order.Customer_ID + ",'" + orderItemsInfo.orderitems[i].itemdesc + "'," + orderItemsInfo.orderitems[i].qty + ")";
-            }
-        } else {
-            if(orderItemsInfo.orderitems[i].qty !== 0){
+            } else {
                 strVALUES += ",(" + orderItemsInfo.order.Order_ID + "," + orderItemsInfo.order.Customer_ID + ",'" + orderItemsInfo.orderitems[i].itemdesc + "'," + orderItemsInfo.orderitems[i].qty + ")";
             }
         }

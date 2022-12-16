@@ -278,7 +278,7 @@ labadadb.getSales = () => {
     //const date = new Date().toISOString().split('T')[0];
     return new Promise(
         (resolve, reject) => {
-            conn.query(`SELECT serv.servicename, SUM(ord.Amount) as Total FROM labada_db.tbl_Orders as ord left join labada_db.tbl_Services serv ON serv.serviceid = ord.Service_ID WHERE ord.Status = 4 group by serv.servicename`,
+            conn.query(`SELECT serv.servicename, SUM(ord.Amount) as Total FROM tbl_Orders as ord left join tbl_Services serv ON serv.serviceid = ord.Service_ID WHERE ord.Status = 4 group by serv.servicename`,
             [],
             (err, results) => {
                 if(err){

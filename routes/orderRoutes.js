@@ -115,6 +115,7 @@ router.post('/updateOrder', async (req, res, next) => {
     try {
         let results = await db.updateOrderAsProcessing(req.body);
         let results2 = await db.insertOrderItems(req.body);
+        let results3 = await db.insertItemCode(req.body);
         res.json(results);
     } catch (err) {
         res.sendStatus(500);
@@ -178,6 +179,24 @@ router.post('/getItemQuantity', async (req, res, next) => {
 router.post('/getSales', async (req, res, next) => {
     try {
         let results = await db.getSales();
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/orderConfirmed', async (req, res, next) => {
+    try {
+        let results = await db.onConfirmed(req.body.orderid);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/getOrderCodes', async (req, res, next) => {
+    try {
+        let results = await db.onGetOrderCodes(req.body.orderid);
         res.json(results);
     } catch (err) {
         res.sendStatus(500);

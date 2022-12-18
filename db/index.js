@@ -27,7 +27,7 @@ labadadb.bookPickUp = (bookInfo) => {
 labadadb.getOrderHistory = (customerID) => {
     return new Promise((resolve, reject) => {
         conn.query(`SELECT ord.Order_ID as id, ord.Amount as amount, ord.Pickup_Date as pickup, ord.Deliver_Date as deliver,
-        ord.Weight as kilo, ord.Status as status, stat.Status_Desc as statusDesc, ord.Time as time, ord.WithQRQty as withqr FROM tbl_Orders as ord LEFT JOIN tbl_Status as stat
+        ord.Weight as kilo, ord.Status as status, stat.Status_Desc as statusDesc, ord.Time as time, ord.WithQRQty as withqr, ord.isConfirmed FROM tbl_Orders as ord LEFT JOIN tbl_Status as stat
         ON stat.Status_ID = ord.Status WHERE ord.Customer_ID = ? 
         ORDER BY ord.Order_Date DESC LIMIT 10;`,
         [customerID],
@@ -117,7 +117,7 @@ labadadb.getOrders = () => {
     const date = new Date().toISOString().split('T')[0];
     return new Promise(
         (resolve, reject) => {
-            conn.query(`SELECT ord.*, stat.Status_Desc, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID left join tbl_Status as stat ON stat.Status_ID = ord.Status WHERE Pickup_Date <= ? AND Status in (1,3)`,
+            conn.query(`SELECT ord.*, stat.Status_Desc, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID left join tbl_Status as stat ON stat.Status_ID = ord.Status WHERE Pickup_Date <= ? AND Status in (1,3) Order by Status, ord.Order_ID`,
             [date],
             (err, results) => {
                 if(err){
@@ -280,6 +280,65 @@ labadadb.getSales = () => {
         (resolve, reject) => {
             conn.query(`SELECT serv.servicename, SUM(ord.Amount) as Total FROM tbl_Orders as ord left join tbl_Services serv ON serv.serviceid = ord.Service_ID WHERE ord.Status = 4 group by serv.servicename`,
             [],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
+labadadb.onConfirmed = (orderid) => {
+    //const date = new Date().toISOString().split('T')[0];
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`UPDATE labada_db.tbl_Orders SET isConfirmed = true WHERE Order_ID = ?`,
+            [orderid],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
+labadadb.insertItemCode = (orderItemsInfo) => {
+    let strVALUES = ""; 
+
+    for (let i = 0; i < orderItemsInfo.itemCode.length; i++) {
+        if(orderItemsInfo.itemCode[i].isChecked){
+            if(strVALUES === ""){
+                strVALUES += "(" + orderItemsInfo.order.Order_ID + "," + orderItemsInfo.itemCode[i].id + ",'" + orderItemsInfo.itemCode[i].desc + "')";
+            } else {
+                strVALUES += ",(" + orderItemsInfo.order.Order_ID + "," + orderItemsInfo.itemCode[i].id + ",'" +  orderItemsInfo.itemCode[i].desc + "')";
+            }
+        }
+    }
+
+    console.log(strVALUES);
+
+    return new Promise((resolve, reject) => {
+        conn.query(`INSERT INTO tbl_OrderItemCode (Order_ID, ItemCode, ItemCode_Desc) VALUES ${strVALUES}`,
+        [strVALUES],
+        (err, results) => {
+            if(err) {
+                return reject(err);
+            }
+            return resolve(results);
+        });
+    });
+}
+
+labadadb.onGetOrderCodes = (orderid) => {
+    //const date = new Date().toISOString().split('T')[0];
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT * FROM tbl_OrderItemCode WHERE Order_ID = ?`,
+            [orderid],
             (err, results) => {
                 if(err){
                     return reject(err);

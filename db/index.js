@@ -294,7 +294,7 @@ labadadb.onConfirmed = (orderid) => {
     //const date = new Date().toISOString().split('T')[0];
     return new Promise(
         (resolve, reject) => {
-            conn.query(`UPDATE labada_db.tbl_Orders SET isConfirmed = true WHERE Order_ID = ?`,
+            conn.query(`UPDATE tbl_Orders SET isConfirmed = true WHERE Order_ID = ?`,
             [orderid],
             (err, results) => {
                 if(err){

@@ -203,4 +203,31 @@ router.post('/getOrderCodes', async (req, res, next) => {
     }
 });
 
+router.post('/addService', async (req, res, next) => {
+    try {
+        let results = await db.onAddService(req.body);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/editService', async (req, res, next) => {
+    try {
+        let results = await db.editService(req.body);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/deleteService', async (req, res, next) => {
+    try {
+        let results = await db.deleteService(req.body);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
 module.exports = router;

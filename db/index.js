@@ -29,7 +29,7 @@ labadadb.getOrderHistory = (customerID) => {
         conn.query(`SELECT ord.Order_ID as id, ord.Amount as amount, ord.Pickup_Date as pickup, ord.Deliver_Date as deliver,
         ord.Weight as kilo, ord.Status as status, stat.Status_Desc as statusDesc, ord.Time as time, ord.WithQRQty as withqr, ord.isConfirmed FROM tbl_Orders as ord LEFT JOIN tbl_Status as stat
         ON stat.Status_ID = ord.Status WHERE ord.Customer_ID = ? 
-        ORDER BY ord.Order_Date DESC LIMIT 10;`,
+        ORDER BY ord.Status,ord.Order_Date DESC LIMIT 10;`,
         [customerID],
         (err, results) => {
             if(err){
@@ -339,6 +339,69 @@ labadadb.onGetOrderCodes = (orderid) => {
         (resolve, reject) => {
             conn.query(`SELECT * FROM tbl_OrderItemCode WHERE Order_ID = ?`,
             [orderid],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
+labadadb.onGetOrderCodes = (orderid) => {
+    //const date = new Date().toISOString().split('T')[0];
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT * FROM tbl_OrderItemCode WHERE Order_ID = ?`,
+            [orderid],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
+labadadb.onAddService = (serviceinfo) => {
+    console.log(serviceinfo);
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`INSERT INTO tbl_Services (servicename, rate) VALUES (?,?)`,
+            [serviceinfo.servicename, serviceinfo.rate],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
+labadadb.editService = (serviceinfo) => {
+    console.log(serviceinfo);
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`UPDATE tbl_Services SET servicename = ? , rate = ? WHERE serviceid = ?`,
+            [serviceinfo.servicename, serviceinfo.rate, serviceinfo.serviceid],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            });
+        }
+    );
+}
+
+labadadb.deleteService = (serviceinfo) => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`DELETE FROM tbl_Services WHERE serviceid = ?`,
+            [serviceinfo.serviceid],
             (err, results) => {
                 if(err){
                     return reject(err);

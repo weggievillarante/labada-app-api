@@ -274,16 +274,18 @@ labadadb.getItemQuantity = () => {
     );
 }
 
-labadadb.getSales = () => {
+labadadb.getSales = (requestDates) => {
     //const date = new Date().toISOString().split('T')[0];
     return new Promise(
         (resolve, reject) => {
-            conn.query(`SELECT serv.servicename, SUM(ord.Amount) as Total FROM tbl_Orders as ord left join tbl_Services serv ON serv.serviceid = ord.Service_ID WHERE ord.Status = 4 group by serv.servicename`,
-            [],
+            conn.query(`SELECT serv.servicename, SUM(ord.Amount) as Total FROM tbl_Orders as ord left join tbl_Services serv ON serv.serviceid = ord.Service_ID WHERE ord.Status = 4 AND Deliver_Date >= ? AND Deliver_Date <= ? group by serv.servicename`,
+            [requestDates.dateFrom.split('T')[0], requestDates.dateTo.split('T')[0]],
             (err, results) => {
                 if(err){
+                    console.log(err);
                     return reject(err);
                 }
+                console.log(results);
                 return resolve(results);
             });
         }
@@ -408,6 +410,21 @@ labadadb.deleteService = (serviceinfo) => {
                 }
                 return resolve(results);
             });
+        }
+    );
+}
+
+labadadb.getSalesSummary = (requestDate) => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT DATE_FORMAT(Deliver_Date, '%d %b %Y') as DeliverDate, serv.servicename ,Weight, Amount FROM tbl_Orders as ord LEFT JOIN tbl_Services as serv ON serv.serviceid = ord.Service_ID WHERE ord.Status = 4 AND ord.Deliver_Date >= ? AND ord.Deliver_Date <= ? order by ord.Deliver_Date`,
+            [requestDate.dateFrom.split('T')[0], requestDate.dateTo.split('T')[0]],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            })
         }
     );
 }

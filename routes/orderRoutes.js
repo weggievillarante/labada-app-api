@@ -178,7 +178,7 @@ router.post('/getItemQuantity', async (req, res, next) => {
 
 router.post('/getSales', async (req, res, next) => {
     try {
-        let results = await db.getSales();
+        let results = await db.getSales(req.body);
         res.json(results);
     } catch (err) {
         res.sendStatus(500);
@@ -224,6 +224,15 @@ router.post('/editService', async (req, res, next) => {
 router.post('/deleteService', async (req, res, next) => {
     try {
         let results = await db.deleteService(req.body);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/getSalesSummary', async (req, res, next) => {
+    try {
+        let results = await db.getSalesSummary(req.body);
         res.json(results);
     } catch (err) {
         res.sendStatus(500);

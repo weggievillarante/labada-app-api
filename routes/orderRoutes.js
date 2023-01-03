@@ -239,4 +239,31 @@ router.post('/getSalesSummary', async (req, res, next) => {
     }
 });
 
+router.post('/sentMessage', async (req, res, next) => {
+    try {
+        let results = await db.sentMessage(req.body);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+});
+
+router.post('/getAdminChats', async (req, res, next) => {
+    try{
+        let results = await db.getAdminChats(req.body.receiver);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+}); 
+
+router.post('/getAdminChatsDetails', async (req, res, next) => {
+    try{
+        let results = await db.getAdminChatsDetails(req.body);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+}); 
+
 module.exports = router;

@@ -429,4 +429,51 @@ labadadb.getSalesSummary = (requestDate) => {
     );
 }
 
+labadadb.sentMessage = (messageData) => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`INSERT INTO tbl_ChatMessage (chatReceiver, chatSender, chatMessage, senderFullName, isRead) VALUES (?,?,?,?, false)`,
+            [messageData.receiver, messageData.sender, messageData.message, messageData.fullname],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            })
+        }
+    );
+}
+
+labadadb.getAdminChats = (receiver) => {
+    console.log(receiver);
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT chatReceiver AS receiver, senderFullName AS fullname, chatSender AS sender ,(SELECT COUNT(*) FROM tbl_ChatMessage WHERE chatSender = sender AND isRead = false) AS chatcount FROM tbl_ChatMessage WHERE chatReceiver = ? GROUP BY chatReceiver, chatSender, senderFullName`,
+            [receiver],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            })
+        }
+    );
+}
+
+labadadb.getAdminChatsDetails = (chatData) => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT * FROM tbl_ChatMessage WHERE chatReceiver in (?,?) and chatSender in (?,?) order by chatID desc`,
+            [chatData.receiver, chatData.sender, chatData.receiver, chatData.sender],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            })
+        }
+    );
+}
+
+
 module.exports = labadadb;

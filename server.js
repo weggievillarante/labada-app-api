@@ -9,10 +9,13 @@ const apiRouter = require('./routes/orderRoutes');
 io.on('connection', (socket) => {
     console.log('a user connected');
 
-    socket.emit('message', 'Welcome to labada');
+    socket.on('chatMessage', msg => {
+      io.emit('chatMessage', msg);
+      console.log(msg);
+    });
 
     socket.on('disconnect', () => {
-        io.emit('message', 'user disconnected.');
+        io.emit('chatMessage', 'user disconnected.');
         console.log('user disconnected');
     });
   });

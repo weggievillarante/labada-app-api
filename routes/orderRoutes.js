@@ -266,4 +266,32 @@ router.post('/getAdminChatsDetails', async (req, res, next) => {
     }
 }); 
 
+router.post('/clearUnread', async (req, res, next) => {
+    try{
+        let results = await db.clearUnread(req.body.sender);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+}); 
+
+router.post('/saveUser', async (req, res, next) => {
+    try{
+        let results = await db.saveUser(req.body);
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+}); 
+
+router.post('/getUsers', async (req, res, next) => {
+    try{
+        let results = await db.getUsers();
+        res.json(results);
+    } catch (err) {
+        res.sendStatus(500);
+    }
+}); 
+
+
 module.exports = router;

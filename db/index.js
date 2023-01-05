@@ -473,7 +473,52 @@ labadadb.getAdminChatsDetails = (chatData) => {
             })
         }
     );
-}
+} 
+
+labadadb.clearUnread = (sender) => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`UPDATE tbl_ChatMessage SET isRead = 1 WHERE chatSender = ?`,
+            [sender],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            })
+        }
+    );
+} 
+
+labadadb.saveUser = (userInfo) => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`INSERT INTO tbl_Users (username, password, firstname, lastname, usertype) VALUES (?,?,?,?,?)`,
+            [userInfo.username, userInfo.password, userInfo.firstname, userInfo.lastname, userInfo.usertype],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            })
+        }
+    );
+} 
+
+labadadb.getUsers = () => {
+    return new Promise(
+        (resolve, reject) => {
+            conn.query(`SELECT * FROM tbl_Users`,
+            [],
+            (err, results) => {
+                if(err){
+                    return reject(err);
+                }
+                return resolve(results);
+            })
+        }
+    );
+} 
 
 
 module.exports = labadadb;

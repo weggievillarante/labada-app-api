@@ -114,11 +114,13 @@ labadadb.adminLogin = (user) => {
 }
 
 labadadb.getOrders = () => {
-    const date = new Date().toISOString().split('T')[0];
+    const date = new Date().toLocaleDateString().split('T')[0].split('/');
+    const fdate = date[2] + '-' + date[1] + '-' + date[0];
+    console.log(fdate);
     return new Promise(
         (resolve, reject) => {
             conn.query(`SELECT ord.*, stat.Status_Desc, cust.address, cust.mobilephone, CONCAT(cust.firstname,' ',cust.lastname) as fullname FROM tbl_Orders as ord LEFT JOIN tbl_Customers as cust ON cust.customer_ID = ord.Customer_ID left join tbl_Status as stat ON stat.Status_ID = ord.Status WHERE Pickup_Date <= ? AND Status in (1,3) Order by Status, ord.Order_ID`,
-            [date],
+            [fdate],
             (err, results) => {
                 if(err){
                     return reject(err);

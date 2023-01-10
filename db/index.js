@@ -419,7 +419,7 @@ labadadb.deleteService = (serviceinfo) => {
 labadadb.getSalesSummary = (requestDate) => {
     return new Promise(
         (resolve, reject) => {
-            conn.query(`SELECT DATE_FORMAT(Deliver_Date, '%d %b %Y') as DeliverDate, serv.servicename ,Weight, Amount FROM tbl_Orders as ord LEFT JOIN tbl_Services as serv ON serv.serviceid = ord.Service_ID WHERE ord.Status = 4 AND ord.Deliver_Date >= ? AND ord.Deliver_Date <= ? order by ord.Deliver_Date`,
+            conn.query(`SELECT ord.*, DATE_FORMAT(Deliver_Date, '%d %b %Y') as DeliverDate, serv.servicename ,Weight, Amount FROM tbl_Orders as ord LEFT JOIN tbl_Services as serv ON serv.serviceid = ord.Service_ID WHERE ord.Status = 4 AND ord.Deliver_Date >= ? AND ord.Deliver_Date <= ? order by ord.Deliver_Date`,
             [requestDate.dateFrom.split('T')[0], requestDate.dateTo.split('T')[0]],
             (err, results) => {
                 if(err){

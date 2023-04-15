@@ -13,6 +13,7 @@
     "express": "^4.18.2",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.20",
+    "platform-cli": "^1.1.2",
     "platformsh": "^1.0.0",
     "socket.io": "^4.5.4"
   }

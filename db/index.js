@@ -1,13 +1,22 @@
 const mysql = require('mysql');
 
 const conn = mysql.createPool({
-    connectionLimit: 10, 
-    password: 'D3f@ult!',
-    user: 'root',
+    connectionLimit: 10,
+    password: 'labada2023',
+    user: 'labada_apps',
     database: 'labada_db',
-    host: 'localhost',
+    host: 'db4free.net',
     port: '3306'
 });
+
+// const conn = mysql.createPool({
+//     connectionLimit: 10,
+//     password: 'D3f@ult!',
+//     user: 'root',
+//     database: 'labada_db',
+//     host: 'localhost',
+//     port: '3306'
+// });
 
 let labadadb = {};
 
@@ -115,7 +124,7 @@ labadadb.adminLogin = (user) => {
 
 labadadb.getOrders = () => {
     const date = new Date().toLocaleDateString().split('T')[0].split('/');
-    const fdate = date[2] + '-' + date[1] + '-' + date[0];
+    const fdate = date[2] + '-' + date[0] + '-' + date[1];
     console.log(fdate);
     return new Promise(
         (resolve, reject) => {
@@ -278,6 +287,7 @@ labadadb.getItemQuantity = () => {
 
 labadadb.getSales = (requestDates) => {
     //const date = new Date().toISOString().split('T')[0];
+    console.log(requestDates.dateFrom.split('T')[0]);
     return new Promise(
         (resolve, reject) => {
             conn.query(`SELECT serv.servicename, SUM(ord.Amount) as Total FROM tbl_Orders as ord left join tbl_Services serv ON serv.serviceid = ord.Service_ID WHERE ord.Status = 4 AND Deliver_Date >= ? AND Deliver_Date <= ? group by serv.servicename`,
